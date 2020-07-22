@@ -1,0 +1,30 @@
+                               Model for Function Parsing
+                               --------------------------
+1. Walk through each non-whitespace character and add valid elements to the elements vector,
+   while throwing an exception if any unexpected tokens are encountered.
+2. Generate a binary tree of elements from the top (lowest precedence) to the bottom (highest
+   precedence). During this, make sure that each opening bracket has a matching closing bracket
+   and that the function makes syntactical sense*.
+
+ * A multi-argument operation should never be followed or preceded by another multi-argument
+   operation and a number or variable should never be followed or preceded by another number
+   or variable; i.e. A variable/number should never be a direct child node of another variable
+   /number. A single-argument operation may be followed or preceded by another single-argument
+   operation, just as long as there is a number or variable inside the composition, possibly
+   being modified by a multi-argument operation. All this really means in terms of the tree is
+   that numbers and variables are endpoints.
+
+x^(2 + ln(2)) + 4  ->  ((x)^[(2) + (ln(2))]) + (4)
+
+                      +
+                     / \
+                    ^   4
+                   / \
+                  x   +
+                     / \
+                    2  ln
+                         \
+                          2
+
+multi-argument operation: must have two children
+single-argument operation: must have one child
