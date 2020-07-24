@@ -1,14 +1,17 @@
+#ifndef LIBUNBINMATH_H
+#define LIBUNBINMATH_H
+
 #include <iostream>
 #include <vector>
-#include <map>
+#include <cstdarg>
 
-// DEFINITIONS
-const std::string opnames[] = {"(", ")", "[", "]",
+// DECLARATIONS
+const std::string opnames[] = {"(", ")", "[", "]", // () and [] have the same effect
                                "sin", "cos", "tan", "csc", "sec", "cot", "arcsin", "arccos", "arctan",
                                "log", "ln", "^",
-                               "*", "/", "+", "-"};
+                               "*", "/", "+", "-", ""};
 
-enum Opid {opid_opbra = 0, opid_clbra,
+enum Opid {opid_oppar = 0, opid_clpar, opid_opbra, opid_clbra,
            opid_sin, opid_cos, opid_tan, opid_csc, opid_sec, opid_cot, opid_arcsin, opid_arccos, opid_arctan,
            opid_log, opid_ln, opid_exp,
            opid_mul, opid_divi, opid_add, opid_sub};
@@ -16,26 +19,20 @@ enum Opid {opid_opbra = 0, opid_clbra,
 enum Eltype {eltype_op = 0, eltype_var, eltype_num}; // opperation | variable | number
 enum Optype {optype_single = 0, optype_multi}; // one or two arguments
 
+// CLASSES
 class Element;
 class Operation;
 class Number;
 class Variable;
-class ParseException;
 
-typedef std::vector<Operation> opvec;
-typedef std::vector<Number> numvec;
-typedef std::map<int, Element> elemap;
-
-// CLASSES
 // Binary tree consisting of the parts of a function
 class Element {
 private:
   Eltype eltype;
-  Element *left = NULL; // Used by single-argument operations
-  Element *right = NULL;
+  Element *left; // Used by single-argument operations
+  Element *right;
 public:
   Element(Eltype eltype_arg, Element *left_arg = NULL, Element *right_arg = NULL): eltype{eltype_arg}, left{left_arg}, right{right_arg} {}
-  virtual ~Element();
 };
 
 class Operation: public Element { // branch of the tree
@@ -50,28 +47,23 @@ class Variable: public Element { // leaf of the tree
 private:
   char sym;
 public:
-  Variable(char sym_arg = '\0'): Element{eltype_var}, sym{sym_arg} {}
-
+  Variable(char sym_arg): Element{eltype_var}, sym{sym_arg} {}
   char getsym() { return sym; }
 };
 
 class Number: public Element { // leaf of the tree
 private:
-  long long value;
+  double value;
 public:
-  Number(long long value_arg): Element{eltype_num}, value{value_arg} {}
+  Number(double value_arg): Element{eltype_num}, value{value_arg} {}
 };
 
 // mathematical function
-class function {
+class Function {
 private:
-  Element tree;
+  std::vector<Element> elements;
 public:
-  function(Element tree_arg): tree{tree_arg} {}
-  ~function();
+  Function(std::vector<Element> elements_arg): elements{elements_arg} {}
 };
 
-// FUNCTIONS
-function* parse(std::string equstr);
-void parsefail(const std::string message, ...);
-void cleanup();
+#endif

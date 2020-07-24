@@ -23,8 +23,8 @@ x^(2 + ln(2)) + 4  ->  ((x)^[(2) + (ln(2))]) + (4)
                   x   +
                      / \
                     2  ln
-                         \
-                          2
+                       /
+                      2
 
 multi-argument operation: must have two children
 single-argument operation: must have one child
