@@ -1,5 +1,5 @@
-#include "include/LibUnbinMath.h"
-#include "include/Parser.h"
+#include <LibUnbinMath.h>
+#include <Parser.h>
 
 int main(int argc, const char *argv[]) {
   if (argc != 2) {
@@ -7,6 +7,8 @@ int main(int argc, const char *argv[]) {
     return -1;
   }
 
+  unbinmath_startparser();
   unbinmath_parse(argv[1]);
+  unbinmath_closeparser();
   return 0;
 }

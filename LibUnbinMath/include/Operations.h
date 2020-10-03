@@ -1,11 +1,12 @@
 #ifndef OPERATIONS_H
 #define OPERATIONS_H
 
-#include "LibUnbinMath.h"
+#include <LibUnbinMath.h>
+#include <cmath>
 
 class OppeningParentheses;
 class ClosingParentheses;
-class Sin;
+class Sin; // in radians
 class Cos;
 class Tan;
 class Csc;
@@ -23,155 +24,202 @@ class Difference;
 
 class OppeningParentheses: public Operation {
 public:
-  static const constexpr char *sym[] = {"(", "[", NULL};
-  static const Optype optype = Optype::enclose;
-  static Element newinstance();
-  OppeningParentheses(Element *left_arg = NULL, Element *right_arg = NULL);
+  OppeningParentheses(std::vector<Element*> elements = {NULL}): Operation{elements} {
+    sym = {"(", "["};
+    optype = Optype::enclose;
+    callback = ([&](std::vector<Element*> localchildren) -> Element* { return NULL; });
+  }
+  Operation* newinstance() { return new OppeningParentheses(); }
 };
 
 class ClosingParentheses: public Operation {
 public:
-  static const constexpr char *sym[] = {")", "]", NULL};
-  static const Optype optype = Optype::enclose;
-  static Element newinstance();
-  ClosingParentheses(Element *left_arg = NULL, Element *right_arg = NULL);
+  ClosingParentheses(std::vector<Element*> elements = {NULL}): Operation{elements} {
+    sym = {")", "]"};
+    optype = Optype::enclose;
+    callback = [&](std::vector<Element*> localchildren) -> Element* { return NULL; };
+  }
+  Operation* newinstance() { return new ClosingParentheses(); }
 };
 
 class Sin: public Operation {
 public:
-  static const constexpr char *sym[] = {"sin", NULL};
-  static const Optype optype = Optype::single;
-  static long double evaluate(long double num); // num is in radians
-  static Element newinstance();
-  Sin(Element *left_arg = NULL, Element *right_arg = NULL);
+  Sin(std::vector<Element*> elements = {NULL}): Operation{elements} {
+    sym = {"sin"};
+    optype = Optype::eval;
+    callback = [&](std::vector<Element*> localchildren) -> Element* {
+      return new Number(sin(((Number*)localchildren.front())->val));
+    };
+  }
+  Operation* newinstance() { return new Sin(); }
 };
 
 class Cos: public Operation {
 public:
-  static const constexpr char *sym[] = {"cos", NULL};
-  static const Optype optype = Optype::single;
-  static long double evaluate(long double num);
-  static Element newinstance();
-  Cos(Element *left_arg = NULL, Element *right_arg = NULL);
+  Cos(std::vector<Element*> elements = {NULL}): Operation{elements} {
+    sym = {"cos"};
+    optype = Optype::eval;
+    callback = [&](std::vector<Element*> localchildren) -> Element* {
+      return new Number(cos(((Number*)localchildren.front())->val));
+    };
+  }
+  Operation* newinstance() { return new Cos(); }
 };
 
 class Tan: public Operation {
 public:
-  static const constexpr char *sym[] = {"tan", NULL};
-  static const Optype optype = Optype::single;
-  static long double evaluate(long double num);
-  static Element newinstance();
-  Tan(Element *left_arg = NULL, Element *right_arg = NULL);
+  Tan(std::vector<Element*> elements = {NULL}): Operation{elements} {
+    sym = {"tan"};
+    optype = Optype::eval;
+    callback = [&](std::vector<Element*> localchildren) -> Element* {
+      return new Number(tan(((Number*)localchildren.front())->val));
+    };
+  }
+  Operation* newinstance() { return new Tan(); }
 };
 
 class Csc: public Operation {
 public:
-  static const constexpr char *sym[] = {"csc", NULL};
-  static const Optype optype = Optype::single;
-  static long double evaluate(long double num);
-  static Element newinstance();
-  Csc(Element *left_arg = NULL, Element *right_arg = NULL);
+  Csc(std::vector<Element*> elements = {NULL}): Operation{elements} {
+    sym = {"csc"};
+    optype = Optype::eval;
+    callback = [&](std::vector<Element*> localchildren) -> Element* {
+      return new Number(1.0 / (sin(((Number*)localchildren.front())->val)));
+    };
+  }
+  Operation* newinstance() { return new Csc(); }
 };
 
 class Sec: public Operation {
 public:
-  static const constexpr char *sym[] = {"sec", NULL};
-  static const Optype optype = Optype::single;
-  static long double evaluate(long double num);
-  static Element newinstance();
-  Sec(Element *left_arg = NULL, Element *right_arg = NULL);
+  Sec(std::vector<Element*> elements = {NULL}): Operation{elements} {
+    sym = {"sec"};
+    optype = Optype::eval;
+    callback = [&](std::vector<Element*> localchildren) -> Element* {
+      return new Number(1.0 / (cos(((Number*)localchildren.front())->val)));
+    };
+  }
+  Operation* newinstance() { return new Sec(); }
 };
 
 class Cot: public Operation {
 public:
-  static const constexpr char *sym[] = {"cot", NULL};
-  static const Optype optype = Optype::single;
-  static long double evaluate(long double num);
-  static Element newinstance();
-  Cot(Element *left_arg = NULL, Element *right_arg = NULL);
+  Cot(std::vector<Element*> elements = {NULL}): Operation{elements} {
+    sym = {"cot"};
+    optype = Optype::eval;
+    callback = [&](std::vector<Element*> localchildren) -> Element* {
+      return new Number(1.0 / (tan(((Number*)localchildren.front())->val)));
+    };
+  }
+  Operation* newinstance() { return new Cot(); }
 };
 
 class Arcsin: public Operation {
 public:
-  static const constexpr char *sym[] = {"arcsin", NULL};
-  static const Optype optype = Optype::single;
-  static long double evaluate(long double num);
-  static Element newinstance();
-  Arcsin(Element *left_arg = NULL, Element *right_arg = NULL);
+  Arcsin(std::vector<Element*> elements = {NULL}): Operation{elements} {
+    sym = {"arcsin"};
+    optype = Optype::eval;
+    callback = [&](std::vector<Element*> localchildren) -> Element* {
+      return new Number(asin(((Number*)localchildren.front())->val));
+    };
+  }
+  Operation* newinstance() { return new Arcsin(); }
 };
 
 class Arccos: public Operation {
 public:
-  static const constexpr char *sym[] = {"arccos", NULL};
-  static const Optype optype = Optype::single;
-  static long double evaluate(long double num);
-  static Element newinstance();
-  Arccos(Element *left_arg = NULL, Element *right_arg = NULL);
+  Arccos(std::vector<Element*> elements = {NULL}): Operation{elements} {
+    sym = {"arccos"};
+    optype = Optype::eval;
+    callback = [&](std::vector<Element*> localchildren) -> Element* {
+      return new Number(acos(((Number*)localchildren.front())->val));
+    };
+  }
+  Operation* newinstance() { return new Arccos(); }
 };
 
 class Arctan: public Operation {
 public:
-  static const constexpr char *sym[] = {"arctan", NULL};
-  static const Optype optype = Optype::single;
-  static long double evaluate(long double num);
-  static Element newinstance();
-  Arctan(Element *left_arg = NULL, Element *right_arg = NULL);
+  Arctan(std::vector<Element*> elements = {NULL}): Operation{elements} {
+    sym = {"arctan"};
+    optype = Optype::eval;
+    callback = [&](std::vector<Element*> localchildren) -> Element* {
+      return new Number(atan(((Number*)localchildren.front())->val));
+    };
+  }
+  Operation* newinstance() { return new Arctan(); }
 };
 
 class Ln: public Operation {
 public:
-  static const constexpr char *sym[] = {"ln", NULL};
-  static const Optype optype = Optype::single;
-  static long double evaluate(long double num);
-  static Element newinstance();
-  Ln(Element *left_arg = NULL, Element *right_arg = NULL);
+  Ln(std::vector<Element*> elements = {NULL}): Operation{elements} {
+    sym = {"ln"};
+    optype = Optype::eval;
+    callback = [&](std::vector<Element*> localchildren) -> Element* {
+      return new Number(log(((Number*)localchildren.front())->val));
+    };
+  }
+  Operation* newinstance() { return new Ln(); }
 };
 
 class Exponent: public Operation {
 public:
-  static const constexpr char *sym[] = {"^", NULL};
-  static const Optype optype = Optype::multi;
-  static long double evaluate(long double num1, long double num2);
-  static Element newinstance();
-  Exponent(Element *left_arg = NULL, Element *right_arg = NULL);
+  Exponent(std::vector<Element*> elements = {NULL}): Operation{elements} {
+    sym = {"^"};
+    optype = Optype::eval;
+    callback = [&](std::vector<Element*> localchildren) -> Element* {
+      return new Number(pow((((Number*)localchildren.front())->val), (((Number*)localchildren[1])->val)));
+    };
+  }
+  Operation* newinstance() { return new Exponent(); }
 };
 
 class Product: public Operation {
 public:
-  static const constexpr char *sym[] = {"*", NULL};
-  static const Optype optype = Optype::multi;
-  static long double evaluate(long double num1, long double num2);
-  static Element newinstance();
-  Product(Element *left_arg = NULL, Element *right_arg = NULL);
+  Product(std::vector<Element*> elements = {NULL}): Operation{elements} {
+    sym = {"*"};
+    optype = Optype::eval;
+    callback = [&](std::vector<Element*> localchildren) -> Element* {
+      return new Number((((Number*)localchildren.front())->val) * (((Number*)localchildren[1])->val));
+    };
+  }
+  Operation* newinstance() { return new Product(); }
 };
 
 class Quotient: public Operation {
 public:
-  static const constexpr char *sym[] = {"/", NULL};
-  static const Optype optype = Optype::multi;
-  static long double evaluate(long double num1, long double num2);
-  static Element newinstance();
-  Quotient(Element *left_arg = NULL, Element *right_arg = NULL);
+  Quotient(std::vector<Element*> elements = {NULL}): Operation{elements} {
+    sym = {"/"};
+    optype = Optype::eval;
+    callback = [&](std::vector<Element*> localchildren) -> Element* {
+      return new Number((((Number*)localchildren.front())->val) / (((Number*)localchildren[1])->val));
+    };
+  }
+  Operation* newinstance() { return new Quotient(); }
 };
 
 class Sum: public Operation {
 public:
-  static const constexpr char *sym[] = {"+", NULL};
-  static const Optype optype = Optype::multi;
-  static long double evaluate(long double num1, long double num2);
-  static Element newinstance();
-  Sum(Element *left_arg = NULL, Element *right_arg = NULL);
+  Sum(std::vector<Element*> elements = {NULL}): Operation{elements} {
+    sym = {"+"};
+    optype = Optype::eval;
+    callback = [&](std::vector<Element*> localchildren) -> Element* {
+      return new Number((((Number*)localchildren.front())->val) + (((Number*)localchildren[1])->val));
+    };
+  }
+  Operation* newinstance() { return new Sum(); }
 };
 
 class Difference: public Operation {
 public:
-  static const constexpr char *sym[] = {"-", NULL};
-  static const Optype optype = Optype::multi;
-  static long double evaluate(long double num1, long double num2);
-  static Element newinstance();
-  Difference(Element *left_arg = NULL, Element *right_arg = NULL);
+  Difference(std::vector<Element*> elements = {NULL}): Operation{elements} {
+    sym = {"-"};
+    optype = Optype::eval;
+    callback = [&](std::vector<Element*> localchildren) -> Element* {
+      return new Number((((Number*)localchildren.front())->val) - (((Number*)localchildren[1])->val));
+    };
+  }
+  Operation* newinstance() { return new Difference(); }
 };
-
-const Operation oparr[] = {OppeningParentheses(), ClosingParentheses(), Sin(), Cos(), Tan(), Csc(), Sec(), Cot(), Arcsin(), Arccos(), Arctan(), Ln(), Exponent(), Product(), Quotient(), Sum(), Difference()};
 
 #endif
